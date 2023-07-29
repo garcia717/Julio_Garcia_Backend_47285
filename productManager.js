@@ -48,3 +48,8 @@ class ProductManager {
         return product;
     }
 }
+
+
+module.exports = ProductManager;
+
+
