@@ -1,0 +1,23 @@
+{
+  "name": "proyectocoder_julio_garcia",
+  "version": "1.0.0",
+  "description": "",
+  "main": "productManager.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/garcia717/Julio_Garcia_Backend_47285.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/garcia717/Julio_Garcia_Backend_47285/issues"
+  },
+  "homepage": "https://github.com/garcia717/Julio_Garcia_Backend_47285#readme",
+  "dependencies": {
+    "moment": "^2.29.4"
+  }
+}
