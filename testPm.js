@@ -1,93 +1,69 @@
 const ProductManager = require("./productManager");
 
-async function test() {
-  const manager = new ProductManager("./products.json");
+async function testProductManager() {
 
-  // Cargamos los productos desde el archivo
+  const productManager = new ProductManager('products.json');
 
 
-  console.log("getProducts() al principio:");
-  console.log(manager.getProducts());
+  const productsEmpty = productManager.getProducts();
+  console.log(productsEmpty);
 
   try {
-    await manager.addProduct({
-      title: "producto prueba 1",
-      description: "Este es el producto de prueba 1",
-      price: 100,
-      thumbnail: "imagen1.jpg",
-      code: "abc123",
-      stock: 10,
-    });
-
-    console.log("\nProducto agregado satisfactoriamente:");
-    console.log(manager.getProducts());
-
-    await manager.addProduct({
-      title: "producto prueba 2",
-      description: "Este es el producto de prueba 2",
-      price: 150,
-      thumbnail: "imagen2.jpg",
-      code: "def456",
-      stock: 15,
-    });
-
-    console.log("\nProducto agregado satisfactoriamente:");
-    console.log(manager.getProducts());
-
-    await manager.addProduct({
-      title: "producto prueba 3",
-      description: "Este es el producto de prueba 3",
+    const newProductData1 = {
+      title: "producto prueba",
+      description: "Este es un producto prueba",
       price: 200,
-      thumbnail: "imagen3.jpg",
-      code: "ghi789",
-      stock: 20,
-    });
+      thumbnail: "Sin imagen",
+      code: "abc123",
+      stock: 25
+    };
+    productManager.addProduct(newProductData1);
+    const productsAfterAdd1 = productManager.getProducts();
+    console.log(productsAfterAdd1);
+  } catch (error) {
+    console.error(error.message);
+  }
 
-    console.log("\nProducto agregado satisfactoriamente:");
-    console.log(manager.getProducts());
+  try {
+    const newProductData2 = {
+      title: "producto prueba",
+      description: "Este es un segundo producto prueba",
+      price: 300,
+      thumbnail: "Sin imagen",
+      code: "abc133",
+      stock: 25
+    };
+    productManager.addProduct(newProductData2);
+    const productsAfterAdd2 = productManager.getProducts();
+    console.log(productsAfterAdd2);
+  } catch (error) {
+    console.error(error.message);
+  }
 
-    const productById = manager.getProductById(1);
-    console.log("\nProducto por ID:");
-    console.log(productById);
+  const productId = 2;
+  const productById = productManager.getProductById(productId);
+  console.log(productById);
 
-    try {
-      await manager.addProduct({
-        title: "producto repetido",
-        description: "Este producto ya existe",
-        price: 250,
-        thumbnail: "imagen4.jpg",
-        code: "abc123",
-        stock: 5,
-      });
-    } catch (error) {
-      console.error(`Error al agregar producto duplicado: ${error.message}`);
-    }
+  const productIdToUpdate = 2;
+  const updatedFields = {
+    price: 150
+  };
+  try {
+    productManager.updateProduct(productIdToUpdate, updatedFields);
+    const updatedProduct = productManager.getProductById(productIdToUpdate);
+    console.log(updatedProduct);
+  } catch (error) {
+    console.error(error.message);
+  }
 
-    console.log("\nProducto después de intentar agregar duplicado:");
-    console.log(manager.getProducts());
-
-    await manager.updateProduct(1, {
-      price: 300
-    });
-    console.log("\nProducto después de actualizar:");
-    console.log(manager.getProducts());
-
-    try {
-      await manager.deleteProduct(2);
-      console.log("\nProducto después de eliminar:");
-      console.log(manager.getProducts());
-    } catch (error) {
-      console.error(`Error al eliminar producto: ${error.message}`);
-    }
-
-    console.log("\nProducto después de intentar eliminar de nuevo:");
-    console.log(manager.getProducts());
-
-    // Guardamos los productos en el archivo
-
+  const productIdToDelete = 1;
+  try {
+    productManager.deleteProduct(productIdToDelete);
+    const productsAfterDelete = productManager.getProducts();
+    console.log(productsAfterDelete);
   } catch (error) {
     console.error(error.message);
   }
 }
 
-test();
+testProductManager();
