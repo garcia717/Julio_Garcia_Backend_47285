@@ -56,7 +56,7 @@ async function testProductManager() {
     console.error(error.message);
   }
 
-  const productIdToDelete = 1;
+  const productIdToDelete = 2;
   try {
     productManager.deleteProduct(productIdToDelete);
     const productsAfterDelete = productManager.getProducts();

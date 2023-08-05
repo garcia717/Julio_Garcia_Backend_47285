@@ -19,9 +19,9 @@ class ProductManager {
         }
     }
 
-    async saveProducts() {
-        await fs.writeFile(this.path, JSON.stringify(this.products), 'utf-8');
-    }
+     async saveProducts() {
+         await fs.writeFile(this.path, JSON.stringify(this.products), 'utf-8');
+     }
 
     async addProduct(productData) {
         const {
@@ -54,7 +54,7 @@ class ProductManager {
 
         this.products.push(newProduct);
         this.nextId++;
-        await this.saveProducts();
+         await this.saveProducts();
     }
 
     getProducts() {
@@ -75,18 +75,23 @@ class ProductManager {
             throw new Error(`Producto con id '${id}' no encontrado.`);
         }
 
-        this.products[index] = { ...this.products[index], ...updatedFields };
-        await this.saveProducts();
+        this.products[index] = {
+            ...this.products[index],
+            ...updatedFields
+        };
+         await this.saveProducts();
     }
 
     async deleteProduct(id) {
         const index = this.products.findIndex((product) => product.id === id);
+        const path = './products.json'
         if (index === -1) {
             throw new Error(`Producto con id '${id}' no encontrado.`);
         }
 
         this.products.splice(index, 1);
-        await this.saveProducts();
+        await fs.appendFile(path, JSON.stringify(this.products.filter(prod => prod.id != id)))
+        await fs.writeFile(path, JSON.stringify(this.products.filter(prod => prod.id != id)));
     }
 }
 
