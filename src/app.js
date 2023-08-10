@@ -1,7 +1,5 @@
 import express from 'express';
-import {
-    readFile
-} from 'fs/promises';
+import {readFile} from 'fs/promises';
 
 const PORT = 8080;
 const app = express();
