@@ -6,19 +6,20 @@ const app = express();
 
 app.use(express.json());
 
+let products = [];
+
 (async () => {
     const productsData = await readFile('products.json', 'utf-8');
-    const products = JSON.parse(productsData);
+    products = JSON.parse(productsData);
+})();
 
-    app.get('/', (req, res) => {
-        res.send('Hola');
-    });
+app.get('/', (req, res) => {
+    res.send('Hola');
+});
 
-    app.get('/products', (req, res) => {
-        const {
-            category,
-            limit
-        } = req.query;
+app.get('/products', async (req, res) => {
+    try {
+        const { category, limit } = req.query;
         let prods = [...products];
 
         if (category) {
@@ -32,19 +33,27 @@ app.use(express.json());
             }
         }
 
-        res.status(200).send(prods); 
-    });
+        res.status(200).send(prods);
+    } catch (error) {
+        res.status(500).send("Error al obtener los productos");
+    }
+});
 
-    app.get('/products/:id', (req, res) => {
-        const prod = products.find(prod => prod.id === parseInt(req.params.id));
+app.get('/products/:id', async (req, res) => {
+    try {
+        const productId = parseInt(req.params.id);
+        const prod = products.find(prod => prod.id === productId);
+
         if (prod) {
             res.status(200).send(prod);
         } else {
             res.status(404).send("Producto no existente");
         }
-    });
+    } catch (error) {
+        res.status(500).send("Error al obtener el producto");
+    }
+});
 
-    app.listen(PORT, () => {
-        console.log(`Server on port ${PORT}`);
-    });
-})();
+app.listen(PORT, () => {
+    console.log(`Server on port ${PORT}`);
+});
