@@ -46,7 +46,24 @@ class CartManager {
     }
   }
 
+  async addProductToCart(cartId, productId, quantity) {
+    const cartIndex = this.carts.findIndex(cart => cart.id === cartId);
+    if (cartIndex !== -1) {
+      const cart = this.carts[cartIndex];
+      const existingProductIndex = cart.products.findIndex(product => product.id === productId);
 
+      if (existingProductIndex !== -1) {
+        // If the product already exists, increment the quantity
+        cart.products[existingProductIndex].quantity += quantity;
+      } else {
+        // Otherwise, add the product to the cart
+        cart.products.push({ id: productId, quantity });
+      }
+
+      await this.saveCarts();
+      return cart;
+    }
+  }
 }
 
 export default CartManager;
