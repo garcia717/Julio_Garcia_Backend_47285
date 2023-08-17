@@ -53,10 +53,10 @@ class CartManager {
       const existingProductIndex = cart.products.findIndex(product => product.id === productId);
 
       if (existingProductIndex !== -1) {
-        // If the product already exists, increment the quantity
+
         cart.products[existingProductIndex].quantity += quantity;
       } else {
-        // Otherwise, add the product to the cart
+
         cart.products.push({ id: productId, quantity });
       }
 
