@@ -30,10 +30,11 @@ class ProductManager {
             price,
             thumbnail,
             code,
-            stock
+            stock,
+            category
         } = productData;
 
-        if (!title || !description || !price || !thumbnail || !code || !stock) {
+        if (!title || !description || !price || !thumbnail || !code || !stock || !category) {
             throw new Error("Todos los campos son obligatorios.");
         }
 
@@ -50,6 +51,7 @@ class ProductManager {
             thumbnail,
             code,
             stock,
+            category,
         };
 
         this.products.push(newProduct);
