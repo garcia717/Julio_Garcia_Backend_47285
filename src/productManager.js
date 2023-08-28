@@ -59,7 +59,8 @@ class ProductManager {
          await this.saveProducts();
     }
 
-    getProducts() {
+    async getProducts() {
+        await this.loadProducts();
         return this.products;
     }
 
