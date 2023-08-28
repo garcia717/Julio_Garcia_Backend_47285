@@ -45,7 +45,7 @@ io.on('connection', (socket) => {
     console.log('Evento updateProducts recibido en el servidor')
       try {
       const products = await productManager.getProducts(); 
-      socket.emit('updatedProducts', products); 
+      io.emit('updatedProducts', products); 
       console.log('Productos actualizados enviados al cliente');
     } catch (error) {
       console.error('Error:', error);

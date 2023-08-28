@@ -30,5 +30,18 @@ document.addEventListener('DOMContentLoaded', () => {
       } catch (error) {
         console.error('Error:', error);
       }
+      return false;
     });
+});
+
+socket.on('updatedProducts', (products) => {
+  console.log('Event updatedProducts received:', products); 
+const productList = document.getElementById('productList');
+productList.innerHTML = '';
+
+products.forEach((product) => {
+  const productItem = document.createElement('li');
+  productItem.textContent = `${product.title} - ${product.price}`;
+  productList.appendChild(productItem);
+});
 });

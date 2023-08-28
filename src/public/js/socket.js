@@ -1,8 +1,7 @@
 const socket = io();
 
-socket.on('updatedProducts', (products) => {
-    console.log('Event updateProducts received:', products); 
-  const productList = document.getElementById('productList');
+socket.on('updatedProducts',async (products) => {
+  const productList = await document.getElementById('productList');
   productList.innerHTML = '';
 
   products.forEach((product) => {
