@@ -12,6 +12,7 @@ import {  Server} from 'socket.io';
 import ProductManager from './productManager.js';
 import mongoose from 'mongoose'
 import  {messageModel}  from './models/messages.models.js';
+import { productModel } from './models/products.models.js';
 
 mongoose.connect("mongodb+srv://garcia717:8eSgKTYGMS9dtS2d@cluster0.y0lhvfd.mongodb.net/ecommerce")
   .then(() => console.log('BDD conectada'))
