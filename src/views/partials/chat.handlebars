@@ -1,0 +1,17 @@
+<h1>Chat en Vivo</h1>
+
+<div id="chat">
+  <div id="message-box">
+    {{#each messages}}
+      <p>{{user}} : {{message}} {{fpostTime}}</p>
+    {{/each}}
+  </div>
+  <form id="message-form">
+    <input type="text" id="user" placeholder="Nombre de usuario" required />
+    <input type="text" id="message" placeholder="Mensaje" required />
+    <button type="submit">Enviar</button>
+  </form>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="js/chat.js"></script>

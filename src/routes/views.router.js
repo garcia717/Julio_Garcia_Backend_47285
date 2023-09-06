@@ -1,15 +1,15 @@
 import express from 'express';
 import { __dirname } from '../path.js';
-import path from 'path';
-import ProductManager from '../productManager.js';
+import { productModel } from '../models/products.models.js';
+
 
 const viewsRouter = express.Router();
-const productManager = new ProductManager('products.json');
+
 
 
 viewsRouter.get('/home', async (req, res) => {
     try {
-        const products = await productManager.getProducts();
+        const products = await productModel.find().exec();
         res.render('partials/home', { products });
     } catch (error) {
         console.error(error);
@@ -19,6 +19,10 @@ viewsRouter.get('/home', async (req, res) => {
 
 viewsRouter.get('/realtimeproducts', (req, res) => {
     res.render('partials/realTimeProducts' ); 
+  });
+
+  viewsRouter.get('/chat', (req, res) => {
+    res.render('partials/chat');
   });
 
 export default viewsRouter;

@@ -1,13 +1,12 @@
 import express from 'express';
-import ProductManager from "../productManager.js";
+import { productModel } from '../models/products.models.js'; 
 
 const productsRouter = express.Router();
-const productManager = new ProductManager('products.json');
 
 productsRouter.get('/', async (req, res) => {
   try {
     const { limit } = req.query;
-    let products = await productManager.getProducts();
+    let products = await productModel.find().exec();
 
     if (limit) {
       const limitValue = parseInt(limit);
@@ -15,7 +14,7 @@ productsRouter.get('/', async (req, res) => {
         products = products.slice(0, limitValue);
       }
     }
-
+  
     res.status(200).json(products);
   } catch (error) {
     console.error(error);
@@ -25,8 +24,8 @@ productsRouter.get('/', async (req, res) => {
 
 productsRouter.get('/:pid', async (req, res) => {
   try {
-    const productId = parseInt(req.params.pid);
-    const product = await productManager.getProductById(productId);
+    const productId = req.params.pid;
+    const product = await productModel.findById(productId).exec();
 
     if (product) {
       res.status(200).json(product);
@@ -42,9 +41,10 @@ productsRouter.get('/:pid', async (req, res) => {
 productsRouter.post('/', async (req, res) => {
   try {
     const productData = req.body;
+    const newProduct = new productModel(productData);
 
-    await productManager.addProduct(productData);
-    
+    await newProduct.save();
+
     res.status(201).send('Producto agregado correctamente');
   } catch (error) {
     console.error(error);
@@ -54,10 +54,10 @@ productsRouter.post('/', async (req, res) => {
 
 productsRouter.put('/:pid', async (req, res) => {
   try {
-    const productId = parseInt(req.params.pid);
+    const productId = req.params.pid;
     const updatedFields = req.body;
 
-    await productManager.updateProduct(productId, updatedFields);
+    await productModel.findByIdAndUpdate(productId, updatedFields).exec();
     res.status(200).send('Producto actualizado correctamente');
   } catch (error) {
     console.error(error);
@@ -67,9 +67,9 @@ productsRouter.put('/:pid', async (req, res) => {
 
 productsRouter.delete('/:pid', async (req, res) => {
   try {
-    const productId = parseInt(req.params.pid);
+    const productId = req.params.pid;
 
-    await productManager.deleteProduct(productId);
+    await productModel.findByIdAndRemove(productId).exec();
     res.status(200).send('Producto eliminado correctamente');
   } catch (error) {
     console.error(error);
