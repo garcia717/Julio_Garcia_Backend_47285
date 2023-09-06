@@ -14,7 +14,7 @@ import mongoose from 'mongoose'
 import  {messageModel}  from './models/messages.models.js';
 import { productModel } from './models/products.models.js';
 
-mongoose.connect("mongodb+srv://garcia717:8eSgKTYGMS9dtS2d@cluster0.y0lhvfd.mongodb.net/ecommerce")
+mongoose.connect("mongodb+srv://garcia717:<password>@cluster0.y0lhvfd.mongodb.net/ecommerce")
   .then(() => console.log('BDD conectada'))
   .catch(() => console.log('Error en conexion a BDD'))
 
