@@ -1,3 +1,4 @@
+import "dotenv/config"
 import express from 'express';
 import http from 'http';
 import path from 'path';
@@ -9,13 +10,12 @@ import cartRouter from './routes/cart.router.js';
 import viewsRouter from './routes/views.router.js';
 import {  __dirname} from './path.js';
 import {  Server} from 'socket.io';
-import ProductManager from './productManager.js';
 import mongoose from 'mongoose'
 import  {messageModel}  from './models/messages.models.js';
 import { productModel } from './models/products.models.js';
 
-mongoose.connect("mongodb+srv://garcia717:<password>@cluster0.y0lhvfd.mongodb.net/ecommerce")
-  .then(() => console.log('BDD conectada'))
+mongoose.connect(process.env.MONGO_URL)
+  .then(() => {console.log('BDD conectada')})
   .catch(() => console.log('Error en conexion a BDD'))
 
 const PORT = 8080;
@@ -25,9 +25,6 @@ const io = new Server(server);
 export {
   io
 };
-const productManager = new ProductManager('products.json');
-
-
 
 
 const hbs = exphbs.create({
@@ -108,3 +105,4 @@ app.get('/chat', viewsRouter);
 server.listen(PORT, () => {
   console.log(`Server on port ${PORT}`);
 });
+

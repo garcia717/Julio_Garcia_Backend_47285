@@ -1,26 +1,47 @@
 import express from 'express';
 import { productModel } from '../models/products.models.js'; 
 
+
 const productsRouter = express.Router();
 
-productsRouter.get('/', async (req, res) => {
-  try {
-    const { limit } = req.query;
-    let products = await productModel.find().exec();
+ productsRouter.get('/', async (req, res) => {
+   try {
+     const { limit = 10, page = 1, sort, query } = req.query;
+     const options = {
+       page: parseInt(page),
+       limit: parseInt(limit),
+       sort: sort === 'desc' ? { price: -1 } : sort === 'asc' ? { price: 1 } : null, 
+     };
 
-    if (limit) {
-      const limitValue = parseInt(limit);
-      if (!isNaN(limitValue) && limitValue > 0) {
-        products = products.slice(0, limitValue);
-      }
-    }
-  
-    res.status(200).json(products);
-  } catch (error) {
-    console.error(error);
-    res.status(500).send('Error al obtener los productos');
+
+     const filter = {};
+     if (query === 'available') {
+       filter.available = true;
+     } else if (query === 'unavailable') {
+       filter.available = false;
+     } else if (query) {
+       filter.category = query;
+     }
+     const products = await productModel.paginate(filter, options);
+     const response = {
+       status: 'success',
+       payload: products.docs, 
+       totalPages: products.totalPages,
+       prevPage: products.prevPage,
+       nextPage: products.nextPage,
+       page: products.page,
+       hasPrevPage: products.hasPrevPage,
+       hasNextPage: products.hasNextPage,
+       prevLink: products.hasPrevPage ? `/api/products?limit=${limit}&page=${products.prevPage}&sort=${sort}&query=${query}` : null,
+       nextLink: products.hasNextPage ? `/api/products?limit=${limit}&page=${products.nextPage}&sort=${sort}&query=${query}` : null,
+     };
+
+     res.status(200).json(response);
+   } catch (error) {
+     console.error(error);
+     res.status(500).json({ status: 'error', message: 'Error al obtener los productos' });
   }
-});
+ });
 
 productsRouter.get('/:pid', async (req, res) => {
   try {
@@ -78,3 +99,5 @@ productsRouter.delete('/:pid', async (req, res) => {
 });
 
 export default productsRouter;
+
+
