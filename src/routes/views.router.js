@@ -25,4 +25,8 @@ viewsRouter.get('/realtimeproducts', (req, res) => {
     res.render('partials/chat');
   });
 
+  viewsRouter.get('/login', (req, res) => {
+    res.render('partials/login'); 
+  });
+
 export default viewsRouter;

@@ -10,9 +10,14 @@ import cartRouter from './routes/cart.router.js';
 import viewsRouter from './routes/views.router.js';
 import {  __dirname} from './path.js';
 import {  Server} from 'socket.io';
-import mongoose from 'mongoose'
+import mongoose from 'mongoose';
 import  {messageModel}  from './models/messages.models.js';
 import { productModel } from './models/products.models.js';
+import cookieParser from "cookie-parser";
+import session from "express-session";
+import MongoStore from "connect-mongo";
+
+
 
 mongoose.connect(process.env.MONGO_URL)
   .then(() => {console.log('BDD conectada')})
@@ -25,7 +30,13 @@ const io = new Server(server);
 export {
   io
 };
-
+const auth = (req, res, next)=>{
+  if(req.session.email === 'admin@admin.com' && req.session.password === 'adminPassword'){
+    return next()
+  }else{
+    return res.send('No tienes acceso a esta ruta')
+  }
+}
 
 const hbs = exphbs.create({
   layoutsDir: path.join(__dirname, 'views/layouts'),
@@ -51,6 +62,23 @@ app.use('/api/carts', cartRouter);
 app.use('/views', viewsRouter);
 app.use('/js', express.static(path.join(__dirname, 'public/js')));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(cookieParser(process.env.SIGNED_COOKIE))
+app.use(
+  session({
+    store: MongoStore.create({
+      mongoUrl: process.env.MONGO_URL,
+      ttl: 60,
+      mongoOptions: {
+        useNewUrlParser: true,
+        useUnifiedTopology: true
+      },
+    }),
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+  })
+);
+
 
 io.on('connection', (socket) => {
   console.log('Usuario conectado');
@@ -99,8 +127,14 @@ app.get('/', (req, res) => {
   res.send('Hola');
 });
 app.get('/realtimeproducts', viewsRouter);
+app.get('/login', viewsRouter);
 app.get('/home', viewsRouter);
 app.get('/chat', viewsRouter);
+
+
+
+
+
 
 server.listen(PORT, () => {
   console.log(`Server on port ${PORT}`);
