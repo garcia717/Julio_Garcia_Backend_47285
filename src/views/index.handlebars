@@ -1,0 +1,33 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ecommerce</title>
+
+  </head>
+  <body>
+    <h1>Ecommerce</h1>
+
+    <button id="loginButton">Ingresar</button>
+
+    <h3 id="mensajeBienvenida"></h3>
+
+    <h2>Productos Disponibles:</h2>
+
+    <ul id="productList">
+      <!-- Aquí se mostrarán los productos desde JavaScript -->
+    </ul>
+
+    <button id="logoutButton">Salir</button>
+
+    {{#if loggedIn}}
+      <button id="logoutButton">Salir</button>
+    {{else}}
+      <button id="logoutButton" style="display: none;">Salir</button>
+    {{/if}}
+
+    <script src="js/buttonLogic.js"></script>
+    <script src="js/main.js"></script>
+
+  </body>
+</html>

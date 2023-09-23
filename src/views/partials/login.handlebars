@@ -1,4 +1,4 @@
-
+<body>
   <h1>Puedes</h1>
   <h2>Iniciar Sesión</h2>
   <form action="/login" method="post">
@@ -12,12 +12,15 @@
   </form>
 <h1>ó</h1>
   <h2>Registrarte</h2>
-  <form action="/register" method="post">
+  <form id="registrationForm" action="/register" method="post">
     <label for="firstName">Nombre:</label>
     <input type="text" id="firstName" name="firstName" required />
     <br />
     <label for="lastName">Apellido:</label>
     <input type="text" id="lastName" name="lastName" required />
+    <br />
+    <label for="age">Edad:</label>
+    <input type="number" id="age" name="age" required />
     <br />
     <label for="email">Correo Electrónico:</label>
     <input type="email" id="email" name="email" required />
@@ -27,3 +30,8 @@
     <br />
     <button type="submit">Registrarse</button>
   </form>
+
+
+
+<script src="/js/main.js"></script>
+</body>

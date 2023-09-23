@@ -7,6 +7,7 @@ import Handlebars from 'handlebars';
 import { allowInsecurePrototypeAccess } from '@handlebars/allow-prototype-access';
 import productsRouter from './routes/products.router.js';
 import cartRouter from './routes/cart.router.js';
+import sessionRouter from "./routes/sessions.router.js";
 import viewsRouter from './routes/views.router.js';
 import {  __dirname} from './path.js';
 import {  Server} from 'socket.io';
@@ -30,13 +31,7 @@ const io = new Server(server);
 export {
   io
 };
-const auth = (req, res, next)=>{
-  if(req.session.email === 'admin@admin.com' && req.session.password === 'adminPassword'){
-    return next()
-  }else{
-    return res.send('No tienes acceso a esta ruta')
-  }
-}
+
 
 const hbs = exphbs.create({
   layoutsDir: path.join(__dirname, 'views/layouts'),
@@ -63,8 +58,7 @@ app.use('/views', viewsRouter);
 app.use('/js', express.static(path.join(__dirname, 'public/js')));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cookieParser(process.env.SIGNED_COOKIE))
-app.use(
-  session({
+app.use(session({
     store: MongoStore.create({
       mongoUrl: process.env.MONGO_URL,
       ttl: 60,
@@ -78,6 +72,7 @@ app.use(
     saveUninitialized: false,
   })
 );
+app.use(sessionRouter)
 
 
 io.on('connection', (socket) => {
@@ -124,15 +119,12 @@ io.on('connection', (socket) => {
 
 
 app.get('/', (req, res) => {
-  res.send('Hola');
+  res.render('index');
 });
 app.get('/realtimeproducts', viewsRouter);
 app.get('/login', viewsRouter);
 app.get('/home', viewsRouter);
 app.get('/chat', viewsRouter);
-
-
-
 
 
 
