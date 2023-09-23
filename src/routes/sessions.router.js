@@ -68,25 +68,24 @@ sessionRouter.get('/check-session', async (req, res) => {
   try {
   
     if (req.session && req.session.login) {
-
-      const user = await userModel.findOne({ email: req.session.login });
+      const { email} = req.body;
+      const user = await userModel.findOne({ email: email});
 
       if (user) {
-
+        const userData = {
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+          rol: user.rol
+        };
+      
         res.status(200).json({
           loggedIn: true,
-          user: {
-            firstName: user.firstName,
-            lastName: user.lastName,
-            email: user.email,
-            rol: user.rol,
-          },
+          user: userData
         });
       } else {
-
         res.status(200).json({ loggedIn: true });
-      }
-    } else {
+      } } else {
 
       res.status(200).json({ loggedIn: false });
     }

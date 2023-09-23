@@ -21,8 +21,6 @@ async function loadProducts() {
   }
 
 
- 
-  window.addEventListener('load', loadProducts);
 
 async function checkSession() {
     try {
@@ -33,7 +31,7 @@ async function checkSession() {
           
           const userName = data.firstName; 
           const mensajeBienvenida = document.getElementById('mensajeBienvenida');
-          mensajeBienvenida.textContent = `Bienvenido, ${userName}.`;
+          mensajeBienvenida.textContent = `Bienvenido,  ${userName}.`;
         }
       }
     } catch (error) {
@@ -41,7 +39,7 @@ async function checkSession() {
     }
   }
   
-
+  window.addEventListener('load', loadProducts);
   window.addEventListener('load', checkSession);
 
   

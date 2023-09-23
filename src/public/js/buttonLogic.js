@@ -5,7 +5,10 @@ const logoutButton = document.getElementById('logoutButton');
 
 loginButton.addEventListener('click', () => {
   window.location.href = '/login';
+
 });
+
+
 
 if (logoutButton) {
   logoutButton.addEventListener('click', async () => {
@@ -21,6 +24,3 @@ if (logoutButton) {
     }
   });
 }
-
-
-window.addEventListener('load', checkSession);
