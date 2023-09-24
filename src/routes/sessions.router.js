@@ -15,7 +15,7 @@ sessionRouter.post('/register', async (req, res) => {
       password,
     });
     await newUser.save();
-    res.redirect('/', 200, { info: 'user' });
+    res.redirect('/', 300, { info: 'user' });
 
   } catch (error) {
     console.error('Error en el registro:', error);
@@ -42,7 +42,7 @@ sessionRouter.post('/login', async (req, res) => {
     if (user) {
       if (user.password === password) {
         req.session.login = true;
-        res.redirect('/', 200, { info: 'user' });
+        res.redirect('/', 300, { info: 'user' });
       } else {
         res.status(401).send({ resultado: 'Contaseña invalida', message: password });
       }
@@ -60,7 +60,7 @@ sessionRouter.get('/logout', (req, res) =>{
     if(req.session.login){
         req.session.destroy()
     }
-    res.redirect('/', 200, { result:'Sesión terminada'});
+    res.redirect('/', 300, { result:'Sesión terminada'});
 })
 
 
@@ -80,8 +80,10 @@ sessionRouter.get('/check-session', async (req, res) => {
         };
       
         res.status(200).json({
-          loggedIn: true,
-          user: userData
+          user: userData,
+          loggedIn: true 
+          
+          
         });
       } else {
         res.status(200).json({ loggedIn: true });

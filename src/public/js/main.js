@@ -28,19 +28,20 @@ async function checkSession() {
       if (response.ok) {
         const data = await response.json();
         if (data.loggedIn) {
+          console.log(data.loggedIn)
+          const {firstName, lastName, email, rol} = data.loggedIn; 
           
-          const userName = data.firstName; 
           const mensajeBienvenida = document.getElementById('mensajeBienvenida');
-          mensajeBienvenida.textContent = `Bienvenido,  ${userName}.`;
+          mensajeBienvenida.textContent = `Bienvenido, ${rol} ${firstName}.`;
         }
       }
     } catch (error) {
       console.error('Error al verificar la sesión:', error);
     }
   }
-  
-  window.addEventListener('load', loadProducts);
   window.addEventListener('load', checkSession);
+  window.addEventListener('load', loadProducts);
+  
 
   
  

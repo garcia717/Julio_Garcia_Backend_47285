@@ -29,4 +29,8 @@ viewsRouter.get('/realtimeproducts', (req, res) => {
     res.render('partials/login'); 
   });
 
+  viewsRouter.get('/', (req, res)=>{
+    res.render('index')
+  });
+  
 export default viewsRouter;
