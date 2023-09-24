@@ -9,6 +9,7 @@ import productsRouter from './routes/products.router.js';
 import cartRouter from './routes/cart.router.js';
 import sessionRouter from "./routes/sessions.router.js";
 import viewsRouter from './routes/views.router.js';
+import userRouter from "./routes/users.router.js";
 import {  __dirname} from './path.js';
 import {  Server} from 'socket.io';
 import mongoose from 'mongoose';
@@ -54,6 +55,7 @@ app.use(express.urlencoded({
 app.use('/socket.io', express.static(path.join(__dirname, 'node_modules/socket.io/client-dist')));
 app.use('/api/products', productsRouter);
 app.use('/api/carts', cartRouter);
+app.use('/api/users', userRouter)
 app.use('/views', viewsRouter);
 app.use('/js', express.static(path.join(__dirname, 'public/js')));
 app.use(express.static(path.join(__dirname, 'public')));
@@ -118,9 +120,7 @@ io.on('connection', (socket) => {
 
 
 
-app.get('/', (req, res) => {
-  res.render('index');
-});
+app.get('/', viewsRouter);
 app.get('/realtimeproducts', viewsRouter);
 app.get('/login', viewsRouter);
 app.get('/home', viewsRouter);
