@@ -2,6 +2,7 @@ import { Router } from "express";
 import { userModel } from "../models/users.models.js";
 
 
+
 const sessionRouter = Router()
 
 sessionRouter.post('/register', async (req, res) => {
@@ -32,7 +33,7 @@ sessionRouter.post('/login', async (req, res) => {
       return;
     }
 
-    if (req.session.login) {
+    if (req.session.loggedIn) {
       res.status(200).send({ resultado: 'Login ya existente' });
       return;
     }
@@ -41,7 +42,8 @@ sessionRouter.post('/login', async (req, res) => {
 
     if (user) {
       if (user.password === password) {
-        req.session.login = true;
+        req.session.loggedIn = true;
+        req.session.user = user;
         res.redirect('/', 300, { info: 'user' });
       } else {
         res.status(401).send({ resultado: 'Contaseña invalida', message: password });
@@ -57,7 +59,7 @@ sessionRouter.post('/login', async (req, res) => {
 
 
 sessionRouter.get('/logout', (req, res) =>{
-    if(req.session.login){
+    if(req.session.loggedIn){
         req.session.destroy()
     }
     res.redirect('/', 300, { result:'Sesión terminada'});
@@ -67,24 +69,17 @@ sessionRouter.get('/logout', (req, res) =>{
 sessionRouter.get('/check-session', async (req, res) => {
   try {
   
-    if (req.session && req.session.login) {
-      const { email} = req.body;
+    if (req.session && req.session.loggedIn) {
+      const { email} = req.session.user;
       const user = await userModel.findOne({ email: email});
 
-      if (user) {
-        const userData = {
-          firstName: user.firstName,
-          lastName: user.lastName,
-          email: user.email,
-          rol: user.rol
-        };
-      
+      if (user) {      
         res.status(200).json({
-          user: userData,
-          loggedIn: true 
+          user,
           
-          
+          loggedIn: true          
         });
+
       } else {
         res.status(200).json({ loggedIn: true });
       } } else {
