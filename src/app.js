@@ -16,8 +16,11 @@ import mongoose from 'mongoose';
 import  {messageModel}  from './models/messages.models.js';
 import { productModel } from './models/products.models.js';
 import cookieParser from "cookie-parser";
+import passport from "passport";
+import initializePassport from "./config/passport.js";
 import session from "express-session";
 import MongoStore from "connect-mongo";
+
 
 
 
@@ -74,9 +77,11 @@ app.use(session({
     saveUninitialized: false,
   })
 );
+initializePassport()
+app.use(passport.initialize())
+app.use(passport.session())
 app.use(sessionRouter)
-
-
+ 
 io.on('connection', (socket) => {
   console.log('Usuario conectado');
 

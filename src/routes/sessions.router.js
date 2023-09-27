@@ -1,54 +1,41 @@
 import { Router } from "express";
 import { userModel } from "../models/users.models.js";
+import  passport  from "passport";
 
 
 const sessionRouter = Router()
 
-sessionRouter.post('/register', async (req, res) => {
-  const { firstName, lastName, age, email, password } = req.body;
+sessionRouter.post('/register',  passport.authenticate('register'), async (req, res) => {
   try {
-    const newUser = new userModel({
-      firstName,
-      lastName,
-      age,
-      email,
-      password,
-    });
-    await newUser.save();
-    res.redirect('/', 300, { info: 'user' });
+    if (!req.user) {
+      return res.status(400).send({ mensaje: "Usuario ya existente" })
+  }
+
+    res.redirect('/', 302, { mensaje: 'Usuario registrado' });
 
   } catch (error) {
     console.error('Error en el registro:', error);
-    res.redirect('/', 404, { info: 'user' });
+    res.redirect('/', 404, { mensaje: `Error al registrar usuario ${error}` });
   }
 });
 
-sessionRouter.post('/login', async (req, res) => {
-  const { email, password } = req.body;
+sessionRouter.post('/login', passport.authenticate('login'),async (req, res) => {
+
 
   try {
-    if (!req.session) {
-      res.status(500).send({ resultado: 'Error de sesión' });
-      return;
-    }
+    if (!req.user) {
+      return res.status(400).send({ mensaje: "Usuario invalido" })
+  }
 
-    if (req.session.login) {
-      res.status(200).send({ resultado: 'Login ya existente' });
-      return;
-    }
+  req.session.user = {
+      first_name: req.user.first_name,
+      last_name: req.user.last_name,
+      age: req.user.age,
+      email: req.user.email
+  }
 
-    const user = await userModel.findOne({ email: email });
-
-    if (user) {
-      if (user.password === password) {
-        req.session.login = true;
-        res.redirect('/', 300, { info: 'user' });
-      } else {
-        res.status(401).send({ resultado: 'Contaseña invalida', message: password });
-      }
-    } else {
-      res.status(404).send({ resultado: 'Not Found', message: user });
-    }
+  res.redirect('/', 302, { payload: req.user });
+ 
   } catch (error) {
     res.status(400).send({ error: `Error en Login: ${error}` });
   }
@@ -60,7 +47,7 @@ sessionRouter.get('/logout', (req, res) =>{
     if(req.session.login){
         req.session.destroy()
     }
-    res.redirect('/', 300, { result:'Sesión terminada'});
+    res.redirect('/', 302, { result:'Sesión terminada'});
 })
 
 
