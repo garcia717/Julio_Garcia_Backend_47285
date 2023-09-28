@@ -29,7 +29,7 @@ async function checkSession() {
         const data = await response.json();
         if (data.loggedIn) {
           console.log(data.loggedIn)
-          const {firstName, lastName, email, rol} = data.loggedIn; 
+          const {firstName, lastName, email, rol} = data.user; 
           
           const mensajeBienvenida = document.getElementById('mensajeBienvenida');
           mensajeBienvenida.textContent = `Bienvenido, ${rol} ${firstName}.`;

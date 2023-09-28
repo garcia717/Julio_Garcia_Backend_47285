@@ -82,7 +82,7 @@ app.use(passport.initialize())
 app.use(passport.session())
 app.use(sessionRouter)
  
-io.on('connection', (socket) => {
+io.on('connection', (socket) => { 
   console.log('Usuario conectado');
 
   socket.on('updateProducts', async () => {
@@ -136,4 +136,6 @@ app.get('/chat', viewsRouter);
 server.listen(PORT, () => {
   console.log(`Server on port ${PORT}`);
 });
+
+
 
