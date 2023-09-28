@@ -1,21 +1,28 @@
 import local from 'passport-local'
 import GithubStrategy from 'passport-github2'
 import passport from 'passport'
-import {createHash, validatedPassword} from '../utils/bcrypt.js'
-import {userModel} from '../models/users.models.js'
+import {
+    createHash,
+    validatedPassword
+} from '../utils/bcrypt.js'
+import {
+    userModel
+} from '../models/users.models.js'
 
 
 const LocalStrategy = local.Strategy
 
 const initializePassport = () => {
     passport.use('register', new LocalStrategy({
-        passReqToCallBack: true,
-        usernameField: 'email'
+        usernameField: 'email',
+        passReqToCallBack: true
     }, async (req, username, password, done) => {
-        
-        const {firstName, lastName, email, age} = req.body
+
+        const {firstName, lastName, email, age  } = req.body
         try {
-            const user = await userModel.findOne({email: email})
+            const user = await userModel.findOne({
+                email: email
+            })
             if (user) {
                 return done(null, false)
             }
@@ -44,6 +51,7 @@ const initializePassport = () => {
             if (!user) {
                 return done(null, false)
             }
+
             if (validatedPassword(password, user.password)) {
                 return done(null, user)
             }
@@ -55,27 +63,29 @@ const initializePassport = () => {
     }))
 
     passport.use('github', new GithubStrategy({
-        clientID : process.env.CLIENT_ID,
-        clientSecret : process.env.SECRET_CLIENT,
-        callbackURL : process.env.CALLBACK_URL
+        clientID: process.env.CLIENT_ID,
+        clientSecret: process.env.SECRET_CLIENT,
+        callbackURL: process.env.CALLBACK_URL
     }, async (accessToken, refreshToken, profile, done) => {
-        try{
-            const user = await userModel.find({email : profile._json.email})
-            if(user){
+        try {
+            const user = await userModel.find({
+                email: profile._json.email
+            })
+            if (user) {
                 done(null, false)
-            }else{
-                 const userCreated = await userModel.create({
+            } else {
+                const userCreated = await userModel.create({
                     firstName: profile._json.name,
-                    lastName:' ',
+                    lastName: ' ',
                     email: profile._json.email,
                     age: 18, //Default
                     password: createHash(profile._json.email + profile._json.name)
-                 })
-                 done(null, userCreated)
+                })
+                done(null, userCreated)
             }
 
-        }catch(error){
-            done (error)
+        } catch (error) {
+            done(error)
         }
     }))
 

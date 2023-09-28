@@ -77,11 +77,13 @@ app.use(session({
     saveUninitialized: false,
   })
 );
+app.use(sessionRouter)
+
 initializePassport()
 app.use(passport.initialize())
 app.use(passport.session())
-app.use(sessionRouter)
  
+
 io.on('connection', (socket) => { 
   console.log('Usuario conectado');
 
