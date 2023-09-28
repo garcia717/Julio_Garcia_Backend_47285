@@ -7,7 +7,6 @@ const sessionRouter = Router()
 
 sessionRouter.post('/register',  passport.authenticate('register'), async (req, res) => {
   
-  
   try {
     if (!req.user) {
       return res.status(400).send({ mensaje: "Usuario ya existente" })
@@ -27,13 +26,6 @@ sessionRouter.post('/login', passport.authenticate('login'),async (req, res) => 
   try {
     if (!req.user) {
       return res.status(400).send({ mensaje: "Usuario invalido" })
-  }
-
-  req.session.user = {
-      firstName: req.user.firstName,
-      lastName: req.user.lastName,
-      age: req.user.age,
-      email: req.user.email
   }
 
   res.redirect('/', 302, { payload: req.user });
