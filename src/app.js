@@ -24,6 +24,7 @@ import MongoStore from "connect-mongo";
 
 
 
+
 mongoose.connect(process.env.MONGO_URL)
   .then(() => {console.log('BDD conectada')})
   .catch(() => console.log('Error en conexion a BDD'))
@@ -52,9 +53,7 @@ app.set('view engine', 'handlebars');
 app.set('views', path.join(__dirname, 'views'));
 
 app.use(express.json());
-app.use(express.urlencoded({
-  extended: true
-}))
+app.use(express.urlencoded({extended: true}))
 app.use('/socket.io', express.static(path.join(__dirname, 'node_modules/socket.io/client-dist')));
 app.use('/api/products', productsRouter);
 app.use('/api/carts', cartRouter);

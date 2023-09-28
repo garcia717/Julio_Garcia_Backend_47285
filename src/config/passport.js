@@ -55,33 +55,6 @@ const initializePassport = () => {
         }
     }))
 
-    // registro con github
-    passport.use('github', new GithubStrategy({
-        clientID: process.env.CLIENT_ID,
-        clientSecret: process.env.SECRET_CLIENT,
-        callbackURL: process.env.CALLBACK_URL
-    }, async (accessToken, refreshToken, profile, done) => {
-        // Validacion de usuario existente
-        try {
-            const user = await userModel.find({email: profile._json.email})
-            if (user) {
-                done(null, false)
-            } else {
-                // creacion de usuario (con los datos disponibles en un perfil publico de GitHub)
-                const userCreated = await userModel.create({
-                    firstName: profile._json.name,
-                    lastName: ' ',
-                    email: profile._json.email,
-                    age: 18, //Default
-                    password: createHash(profile._json.email + profile._json.name)
-                })
-                done(null, userCreated)
-            }
-
-        } catch (error) {
-            done(error)
-        }
-    }))
 
 
     passport.serializeUser((user, done) => {
