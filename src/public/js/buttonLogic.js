@@ -8,6 +8,33 @@ loginButton.addEventListener('click', () => {
 
 });
 
+async function ToggleButton() {
+  try {
+    const response = await fetch('/check-session');
+    if (response.ok) {
+      const data = await response.json();
+      if (data.loggedIn) {
+        if (logoutButton) {
+          logoutButton.style.display = 'block';
+          loginButton.style.display ='none';
+        }
+      } else {
+
+        if (logoutButton) {
+          logoutButton.style.display = 'none';
+          loginButton.style.display = 'block';
+        }
+      }
+    } else {
+      console.error('Error al verificar la sesión');
+    }
+  } catch (error) {
+    console.error('Error al verificar la sesión:', error);
+  }
+}
+
+
+ToggleButton();
 
 
 if (logoutButton) {
@@ -24,3 +51,5 @@ if (logoutButton) {
     }
   });
 }
+
+window.addEventListener('load', ToggleButton);

@@ -76,16 +76,12 @@ app.use(session({
     saveUninitialized: false,
   })
 );
-app.use(sessionRouter)
-
-initializePassport()
 app.use(passport.initialize())
-app.use(passport.session())
- 
+app.use(passport.session({secret:process.env.SIGNED_COOKIE, resave: true, saveUninitialized:true}))
+initializePassport(passport)
+app.use(sessionRouter) 
 
 io.on('connection', (socket) => { 
-  console.log('Usuario conectado');
-
   socket.on('updateProducts', async () => {
     console.log('Evento updateProducts recibido en el servidor')
     try {
@@ -99,10 +95,7 @@ io.on('connection', (socket) => {
 });
 
 io.on('connection', (socket) => {
-  console.log('Usuario conectado');
-
   socket.on('chatMessage', async (data) => {
-
     const message = new messageModel({
       email: data.user,
       message: data.message,

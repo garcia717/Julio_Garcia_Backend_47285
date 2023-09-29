@@ -30,6 +30,7 @@ viewsRouter.get('/realtimeproducts', (req, res) => {
   });
 
   viewsRouter.get('/', (req, res)=>{
+  
     res.render('index')
   });
   

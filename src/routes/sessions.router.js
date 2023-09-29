@@ -1,80 +1,81 @@
 import { Router } from "express";
-import { userModel } from "../models/users.models.js";
 import  passport  from "passport";
 
 
 const sessionRouter = Router()
-
-sessionRouter.post('/register',  passport.authenticate('register'), async (req, res) => {
-  
-  try {
-    if (!req.user) {
-      return res.status(400).send({ mensaje: "Usuario ya existente" })
-  }
-
-    res.redirect('/', 302, { mensaje: 'Usuario registrado' });
-
-  } catch (error) {
-    console.error('Error en el registro:', error);
-    res.redirect('/', 404, { mensaje: `Error al registrar usuario ${error}` });
-  }
-});
-
-sessionRouter.post('/login', passport.authenticate('login'),async (req, res) => {
-
+sessionRouter.post('/register', passport.authenticate('register'), async (req, res) => {
 
   try {
-    if (!req.user) {
-      return res.status(400).send({ mensaje: "Usuario invalido" })
-  }
+      if (!req.user) {
+          return res.status(400).send({ mensaje: "Usuario existente" })
+      }
 
-  res.redirect('/', 302, { payload: req.user });
- 
+      res.redirect(302, '/')
+
   } catch (error) {
-    res.status(400).send({ error: `Error en Login: ${error}` });
+      res.status(500).send({ mensaje: `Error al registrar el usuario ${error}` })
   }
-});
 
-sessionRouter.get('/github', passport.authenticate('github', { scope: ['user:email'] }), async (req, res) => {
-  res.status(200).send({ mensaje: 'Usuario registrado' })
 })
 
-sessionRouter.get('/githubCallback', passport.authenticate('github'), async (req, res) => {
-    req.session.user = req.user
-    res.status(200).send({ mensaje: 'Usuario logueado' })
+sessionRouter.post('/login', passport.authenticate('login'), async (req, res) => {
+
+  try {
+      if (!req.user) {
+          return res.status(401, '/login').send({ mensaje: "Credenciales invalidas" })
+      }
+
+      req.session.user = {
+          firstName: req.user.firstName,
+          lastName: req.user.lastName,
+          age: req.user.age,
+          email: req.user.email,
+      }
+
+      res.redirect(302, '/')
+
+  } catch (error) {
+      res.status(500).send({ mensaje: `Error al iniciar sesion ${error}` })
+  }
+
+})
+
+sessionRouter.get('/github', passport.authenticate('github'), async (req, res) =>{
+  req.session.user = req.user
+  res.redirect(301, '/static')
+})
+
+sessionRouter.get('/githubCallback', passport.authenticate('github', {failureRedirect: '/login', scope: ['user:email']}), async (req, res) =>{
+  req.session.user = {
+      firstName: req.user.firstName,
+      lastName: req.user.lastName,
+      age: req.user.age,
+      email: req.user.email,
+  }
+  res.redirect(302, '/')
 })
 
 sessionRouter.get('/logout', (req, res) =>{
-    if(req.session.loggedIn){
+    if(req.session && req.session.user){
         req.session.destroy()
     }
     res.redirect('/', 302, { result:'Sesión terminada'});
 })
 
 
-sessionRouter.get('/check-session', async (req, res) => {
-  try {
-  
-    if (req.session && req.session.loggedIn) {
-      const { email} = req.session.user;
-      const user = await userModel.findOne({ email: email});
+sessionRouter.get('/check-session', (req, res) => {
+  const { user } = req;
+  const responseData = { loggedIn: !!user };
 
-      if (user) {      
-        res.status(200).json({
-          user,
-          loggedIn: true          
-        });
-
-      } else {
-        res.status(200).json({ loggedIn: true });
-      } } else {
-
-      res.status(200).json({ loggedIn: false });
-    }
-  } catch (error) {
-    console.error('Error al verificar la sesión:', error);
-    res.status(500).json({ error: 'Error interno del servidor' });
+  if (user) {
+    responseData.user = {
+      firstName: user.firstName,
+      lastName: user.lastName,
+      rol: user.rol
+    };
   }
+
+  res.json(responseData);
 });
 
 
