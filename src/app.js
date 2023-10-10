@@ -65,7 +65,7 @@ app.use(cookieParser(process.env.SIGNED_COOKIE))
 app.use(session({
     store: MongoStore.create({
       mongoUrl: process.env.MONGO_URL,
-      ttl: 60,
+      ttl: 600,
       mongoOptions: {
         useNewUrlParser: true,
         useUnifiedTopology: true
