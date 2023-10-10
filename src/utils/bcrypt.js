@@ -8,4 +8,3 @@ const passwordTest = createHash('password')
 
 export const validatedPassword = (passwordSend, passwordDB) => bcrypt.compareSync(passwordSend, passwordDB)
 
-console.log(validatedPassword('password', passwordTest))
