@@ -1,5 +1,7 @@
 import { Router } from "express";
 import  passport  from "passport";
+import { passportError, authorization } from "../utils/messageError.js";
+import {generateToken}  from "../utils/jwt.js";
 
 
 const sessionRouter = Router()
@@ -31,7 +33,11 @@ sessionRouter.post('/login', passport.authenticate('login'), async (req, res) =>
           age: req.user.age,
           email: req.user.email,
       }
-
+      const token = generateToken(req.user)
+      res.cookie('jwtCookie', token, {
+        maxAge: 43200000,
+      })
+      //res.send(200, { payload: req.user })
       res.redirect(302, '/')
 
   } catch (error) {
@@ -59,6 +65,7 @@ sessionRouter.get('/logout', (req, res) =>{
     if(req.session && req.session.user){
         req.session.destroy()
     }
+    res.clearCookie('jwtCookie')
     res.redirect('/', 302, { result:'Sesión terminada'});
 })
 
@@ -77,6 +84,10 @@ sessionRouter.get('/check-session', (req, res) => {
 
   res.json(responseData);
 });
+
+sessionRouter.get('/current', passportError('jwt'), authorization('user'), (req,res) =>{
+  res.send(req.user)
+})
 
 
 
