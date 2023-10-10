@@ -28,11 +28,7 @@ async function checkSession() {
       if (response.ok) {
         const data = await response.json();
         if (data.loggedIn) {
-<<<<<<< HEAD
           
-=======
-          console.log(data.loggedIn)
->>>>>>> Passport+Routes-adv
           const {firstName, lastName, email, rol} = data.user; 
           
           const mensajeBienvenida = document.getElementById('mensajeBienvenida');
