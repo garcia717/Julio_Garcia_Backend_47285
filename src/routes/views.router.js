@@ -30,7 +30,11 @@ viewsRouter.get('/realtimeproducts', (req, res) => {
   });
 
   viewsRouter.get('/', (req, res)=>{
+<<<<<<< HEAD
 
+=======
+  
+>>>>>>> Passport+Routes-adv
     res.render('index')
   });
   

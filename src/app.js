@@ -16,8 +16,12 @@ import mongoose from 'mongoose';
 import  {messageModel}  from './models/messages.models.js';
 import { productModel } from './models/products.models.js';
 import cookieParser from "cookie-parser";
+import passport from "passport";
+import initializePassport from "./config/passport.js";
 import session from "express-session";
 import MongoStore from "connect-mongo";
+
+
 
 
 
@@ -49,9 +53,7 @@ app.set('view engine', 'handlebars');
 app.set('views', path.join(__dirname, 'views'));
 
 app.use(express.json());
-app.use(express.urlencoded({
-  extended: true
-}))
+app.use(express.urlencoded({extended: true}))
 app.use('/socket.io', express.static(path.join(__dirname, 'node_modules/socket.io/client-dist')));
 app.use('/api/products', productsRouter);
 app.use('/api/carts', cartRouter);
@@ -63,7 +65,7 @@ app.use(cookieParser(process.env.SIGNED_COOKIE))
 app.use(session({
     store: MongoStore.create({
       mongoUrl: process.env.MONGO_URL,
-      ttl: 60,
+      ttl: 600,
       mongoOptions: {
         useNewUrlParser: true,
         useUnifiedTopology: true
@@ -74,12 +76,12 @@ app.use(session({
     saveUninitialized: false,
   })
 );
-app.use(sessionRouter)
+app.use(passport.initialize())
+app.use(passport.session({secret:process.env.SIGNED_COOKIE, resave: true, saveUninitialized:true}))
+initializePassport(passport)
+app.use(sessionRouter) 
 
-
-io.on('connection', (socket) => {
-  console.log('Usuario conectado');
-
+io.on('connection', (socket) => { 
   socket.on('updateProducts', async () => {
     console.log('Evento updateProducts recibido en el servidor')
     try {
@@ -93,10 +95,7 @@ io.on('connection', (socket) => {
 });
 
 io.on('connection', (socket) => {
-  console.log('Usuario conectado');
-
   socket.on('chatMessage', async (data) => {
-
     const message = new messageModel({
       email: data.user,
       message: data.message,
@@ -131,4 +130,6 @@ app.get('/chat', viewsRouter);
 server.listen(PORT, () => {
   console.log(`Server on port ${PORT}`);
 });
+
+
 
