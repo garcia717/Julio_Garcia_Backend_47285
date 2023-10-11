@@ -22,9 +22,6 @@ import session from "express-session";
 import MongoStore from "connect-mongo";
 
 
-
-
-
 mongoose.connect(process.env.MONGO_URL)
   .then(() => {console.log('BDD conectada')})
   .catch(() => console.log('Error en conexion a BDD'))
