@@ -1,7 +1,7 @@
 import { Router } from "express";
 import  passport  from "passport";
 import { passportError, authorization } from "../utils/messageError.js";
-import { userModel } from "../models/users.models.js";
+import {generateToken}  from "../utils/jwt.js";
 
 
 const sessionRouter = Router()
@@ -27,23 +27,19 @@ sessionRouter.post('/login', passport.authenticate('login'), async (req, res) =>
           return res.status(401, '/login').send({ mensaje: "Credenciales invalidas" })
       }
 
-    if (req.session.login) {
-      res.status(200).send({ resultado: 'Login ya existente' });
-      return;
-    }
-
-    const user = await userModel.findOne({ email: email });
-
-    if (user) {
-      if (user.password === password) {
-        req.session.login = true;
-        res.redirect('/', 300, { info: 'user' });
-      } else {
-        res.status(401).send({ resultado: 'Contaseña invalida', message: password });
+      req.session.user = {
+          firstName: req.user.firstName,
+          lastName: req.user.lastName,
+          age: req.user.age,
+          email: req.user.email,
       }
-    } else {
-      res.status(404).send({ resultado: 'Not Found', message: user });
-    }
+      const token = generateToken(req.user)
+      res.cookie('jwtCookie', token, {
+        maxAge: 43200000,
+      })
+      //res.send(200, { payload: req.user })
+      res.redirect(302, '/')
+
   } catch (error) {
       res.status(500).send({ mensaje: `Error al iniciar sesion ${error}` })
   }
@@ -66,7 +62,7 @@ sessionRouter.get('/githubCallback', passport.authenticate('github', {failureRed
 })
 
 sessionRouter.get('/logout', (req, res) =>{
-    if(req.session.login){
+    if(req.session && req.session.user){
         req.session.destroy()
     }
     res.clearCookie('jwtCookie')
@@ -74,38 +70,25 @@ sessionRouter.get('/logout', (req, res) =>{
 })
 
 
-sessionRouter.get('/check-session', async (req, res) => {
-  try {
-  
-    if (req.session && req.session.login) {
-      const { email} = req.body;
-      const user = await userModel.findOne({ email: email});
+sessionRouter.get('/check-session', (req, res) => {
+  const { user } = req;
+  const responseData = { loggedIn: !!user };
 
-      if (user) {
-        const userData = {
-          firstName: user.firstName,
-          lastName: user.lastName,
-          email: user.email,
-          rol: user.rol
-        };
-      
-        res.status(200).json({
-          user: userData,
-          loggedIn: true 
-          
-          
-        });
-      } else {
-        res.status(200).json({ loggedIn: true });
-      } } else {
-
-      res.status(200).json({ loggedIn: false });
-    }
-  } catch (error) {
-    console.error('Error al verificar la sesión:', error);
-    res.status(500).json({ error: 'Error interno del servidor' });
+  if (user) {
+    responseData.user = {
+      firstName: user.firstName,
+      lastName: user.lastName,
+      rol: user.rol
+    };
   }
+
+  res.json(responseData);
 });
+
+sessionRouter.get('/current', passportError('jwt'), authorization('user'), (req,res) =>{
+  res.send(req.user)
+})
+
 
 
 
