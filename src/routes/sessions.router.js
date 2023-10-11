@@ -37,7 +37,6 @@ sessionRouter.post('/login', passport.authenticate('login'), async (req, res) =>
       res.cookie('jwtCookie', token, {
         maxAge: 43200000,
       })
-      //res.send(200, { payload: req.user })
       res.redirect(302, '/')
 
   } catch (error) {
@@ -61,13 +60,15 @@ sessionRouter.get('/githubCallback', passport.authenticate('github', {failureRed
   res.redirect(302, '/')
 })
 
-sessionRouter.get('/logout', (req, res) =>{
-    if(req.session && req.session.user){
-        req.session.destroy()
+sessionRouter.get('/logout', (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      console.error('Error al destruir la sesión:', err);
     }
-    res.clearCookie('jwtCookie')
-    res.redirect('/', 302, { result:'Sesión terminada'});
-})
+    res.clearCookie('jwtCookie');
+    res.redirect(302, '/');
+  });
+});
 
 
 sessionRouter.get('/check-session', (req, res) => {
