@@ -15,18 +15,18 @@ export const generateToken = (user) => {
 
 
 export const authToken = (req, res, next) => {
-    const authHeader = req.headers.Authorization
-    if(!authHeader){
-        return res.status(401).sen({error:"Error usuario no autenticado"})
+    const authHeader = req.headers.Authorization;   
+    if (!authHeader) {
+        return res.status(401).send({ error: "Error usuario no autenticado" });
     }
-    const token =authHeader.split('')[1]
+    const token = authHeader.split(' ')[1];   
 
-    jwt.sign(token, process.env.JWT_SECRET, (error, credentials)=>{
-        if(error){
-            return res.status(403).send({error:'Usuario no autorizado, token invalido'})
+    jwt.verify(token, process.env.JWT_SECRET, (error, credentials) => {
+        if (error) {
+            return res.status(403).send({ error: 'Usuario no autorizado, token inválido' });
         }
-    })
+    });
 
-    req.user = credential.user
-    next()
+    req.user = decodedToken.user;   
+    next();
 }

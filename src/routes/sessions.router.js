@@ -1,55 +1,16 @@
 import { Router } from "express";
 import  passport  from "passport";
 import { passportError, authorization } from "../utils/messageError.js";
-import {generateToken}  from "../utils/jwt.js";
-
+import { login, register, logout } from "../controllers/sessions.controller.js";
 
 const sessionRouter = Router()
-sessionRouter.post('/register', passport.authenticate('register'), async (req, res) => {
-
-  try {
-      if (!req.user) {
-          return res.status(400).send({ mensaje: "Usuario existente" })
-      }
-
-      res.redirect(302, '/')
-
-  } catch (error) {
-      res.status(500).send({ mensaje: `Error al registrar el usuario ${error}` })
-  }
-
-})
-
-sessionRouter.post('/login', passport.authenticate('login'), async (req, res) => {
-
-  try {
-      if (!req.user) {
-          return res.status(401, '/login').send({ mensaje: "Credenciales invalidas" })
-      }
-
-      req.session.user = {
-          firstName: req.user.firstName,
-          lastName: req.user.lastName,
-          age: req.user.age,
-          email: req.user.email,
-      }
-      const token = generateToken(req.user)
-      res.cookie('jwtCookie', token, {
-        maxAge: 43200000,
-      })
-      res.redirect(302, '/')
-
-  } catch (error) {
-      res.status(500).send({ mensaje: `Error al iniciar sesion ${error}` })
-  }
-
-})
-
+sessionRouter.post('/register', passport.authenticate('register'), register)
+sessionRouter.post('/login', passport.authenticate('login'), login)
+sessionRouter.get('/logout', logout);
 sessionRouter.get('/github', passport.authenticate('github'), async (req, res) =>{
   req.session.user = req.user
   res.redirect(301, '/static')
 })
-
 sessionRouter.get('/githubCallback', passport.authenticate('github', {failureRedirect: '/login', scope: ['user:email']}), async (req, res) =>{
   req.session.user = {
       firstName: req.user.firstName,
@@ -59,18 +20,6 @@ sessionRouter.get('/githubCallback', passport.authenticate('github', {failureRed
   }
   res.redirect(302, '/')
 })
-
-sessionRouter.get('/logout', (req, res) => {
-  req.session.destroy((err) => {
-    if (err) {
-      console.error('Error al destruir la sesión:', err);
-    }
-    res.clearCookie('jwtCookie');
-    res.redirect(302, '/');
-  });
-});
-
-
 sessionRouter.get('/check-session', (req, res) => {
   const { user } = req;
   const responseData = { loggedIn: !!user };

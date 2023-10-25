@@ -5,8 +5,6 @@ import { productModel } from '../models/products.models.js';
 
 const viewsRouter = express.Router();
 
-
-
 viewsRouter.get('/home', async (req, res) => {
     try {
         const products = await productModel.find().exec();

@@ -24,6 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
         alert('Producto agregado exitosamente');
         form.reset();
         socket.emit('updateProducts', productData);
+        
       } else {
         alert('Error al agregar el producto');
       }
