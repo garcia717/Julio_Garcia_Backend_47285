@@ -3,6 +3,7 @@ import passport from "passport";
 export const passportError = (strategy) => { 
     return async (req, res, next) => {
         passport.authenticate(strategy, (error, user, info) => {
+            console.log('Middleware passportError:', user);
             if (error) {
                 return next(error) 
             }
@@ -24,6 +25,7 @@ export const authorization = (rol) => {
     return async (req, res, next) => {
 
         if (!req.user) {
+            
             return res.status(401).send({ error: 'Usuario no autorizado' })
         }
         if (req.user.user.rol != rol) {

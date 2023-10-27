@@ -11,8 +11,10 @@ const ExtractJWT = jwt.ExtractJwt
 
 const initializePassport = () => {
     const cookieExtractor = req => {
-        const token = req.cookies? req.cookies.jwtCookie: {};
+        console.log(req.headers.authorization)
+        const token = req.headers.authorization ? req.headers.authorization : {}
         return token;
+        
     }
     passport.use('jwt', new JWTStrategy({
         jwtFromRequest: ExtractJWT.fromExtractors([cookieExtractor]),
@@ -23,7 +25,7 @@ const initializePassport = () => {
         } catch (error) {
             return done(error);
         }
-    }));
+    })); 
     passport.use('register', new LocalStrategy({
         passReqToCallback: true,
         usernameField: 'email'

@@ -1,6 +1,7 @@
 import { userModel } from "../models/users.models.js";
 
 export const getUsers = async (req,res) =>{
+    console.log("Usuario autenticado:", req.user)
     try {
         const users = await userModel.find()
         res.status(200).send({ respuesta: 'OK', mensaje: users })

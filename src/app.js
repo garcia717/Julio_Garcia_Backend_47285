@@ -20,6 +20,7 @@ import passport from "passport";
 import initializePassport from "./config/passport.js";
 import session from "express-session";
 import MongoStore from "connect-mongo";
+import cors from 'cors'
 
 
 mongoose.connect(process.env.MONGO_URL)
@@ -49,6 +50,10 @@ app.engine('handlebars', hbs.engine);
 app.set('view engine', 'handlebars');
 app.set('views', path.join(__dirname, 'views'));
 
+app.use(cors({
+  origin: '*',
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+}))
 app.use(express.json());
 app.use(express.urlencoded({extended: true}))
 app.use('/socket.io', express.static(path.join(__dirname, 'node_modules/socket.io/client-dist')));

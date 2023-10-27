@@ -1,7 +1,7 @@
 import { Router } from "express";
 import  passport  from "passport";
-import { passportError, authorization } from "../utils/messageError.js";
 import { login, register, logout } from "../controllers/sessions.controller.js";
+import { passportError, authorization } from "../utils/messageError.js";
 
 const sessionRouter = Router()
 sessionRouter.post('/register', passport.authenticate('register'), register)
@@ -35,7 +35,7 @@ sessionRouter.get('/check-session', (req, res) => {
   res.json(responseData);
 });
 
-sessionRouter.get('/current', passportError('jwt'), authorization('user'), (req,res) =>{
+sessionRouter.get('/current', passportError('jwt'), authorization('admin'), (req,res) =>{
   res.send(req.user)
 })
 

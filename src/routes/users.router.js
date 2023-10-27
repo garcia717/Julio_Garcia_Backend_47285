@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { userModel } from "../models/users.models.js";
-import {passportError, authorization} from '../utils/messageError.js'
 import {getUsers, getUserByID, postUser, editUser, deteleUser} from '../controllers/users.controller.js'
+import { passportError, authorization } from "../utils/messageError.js";
 
 const userRouter = Router()
 
