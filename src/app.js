@@ -21,7 +21,7 @@ import initializePassport from "./config/passport.js";
 import session from "express-session";
 import MongoStore from "connect-mongo";
 import cors from 'cors'
-
+import nodemailer from'nodemailer'
 
 mongoose.connect(process.env.MONGO_URL)
   .then(() => {console.log('BDD conectada')})
@@ -127,7 +127,33 @@ app.get('/login', viewsRouter);
 app.get('/home', viewsRouter);
 app.get('/chat', viewsRouter);
 
+let transporter =nodemailer.createTransport({
+  host: 'smtp.gmail.com', 
+  port: 465, 
+  secure: true, 
+  auth:{
+    user:'garcia717@gmail.com', 
+    pass: process.env.PASSWORD_EMAIL, 
+    AUTHMETHOD: 'LOGIN'}
+})
+app.get('/mail', async(req,res)=>{
+  await transporter.sendMail({
+    from: 'TEST MAIL garcia717@gmail.com',
+    to: 'garcia717@gmail.com',
+    subject:'Business Propossal',
+    html:
+         `<div>
+            <h1>Prince James Nimka</h1>
+          </div>`,
+    atachements:{
+      filename:'NigerianScam.jpg',
+      path: __dirname + '/bills/NigerianScam.jpg',
+      cid:'NigerianScam.jpg',
+    }
+  })
 
+  res.send('mail enviado')
+})
 
 server.listen(PORT, () => {
   console.log(`Server on port ${PORT}`);

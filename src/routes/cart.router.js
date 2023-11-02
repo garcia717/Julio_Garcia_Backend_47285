@@ -1,6 +1,6 @@
 import express from 'express';
 import {passportError, authorization} from '../utils/messageError.js'
-import {editAmountOnCart, editProductOnCart, getCartByID, addProductToCart, deleteCart, deleteProductFromCart} from '../controllers/carts.controller.js'
+import {finalizePurchase, editAmountOnCart, editProductOnCart, getCartByID, addProductToCart, deleteCart, deleteProductFromCart} from '../controllers/carts.controller.js'
 
 const cartRouter = express.Router();
 
@@ -10,5 +10,6 @@ cartRouter.delete('/:cid', passportError('jwt'), authorization('Admin'),deleteCa
 cartRouter.delete('/:cid/products/:pid', deleteProductFromCart);
 cartRouter.put('/:cid', editProductOnCart);
 cartRouter.put('/:cid/products/:pid', editAmountOnCart);
+cartRouter.post('/:cid/purchase', finalizePurchase)
 
 export default cartRouter;

@@ -1,4 +1,7 @@
 import { cartModel } from '../models/carts.models.js';
+import {productModel} from '../models/products.models.js';
+import { ticketModel } from '../models/tickets.models.js';
+
 
 export const getCartByID = async (req, res) =>{
     try {
@@ -122,4 +125,87 @@ export const editAmountOnCart = async (req, res) => {
         console.error(error);
         res.status(500).send("Error al actualizar la cantidad del producto en el carrito");
       }
+}
+
+export const finalizePurchase = async (req, res) => {
+  try {
+      const cartId = req.params.cid;
+      const cart = await cartModel.findById(cartId).populate('products.id_prod');
+
+      if (!cart) {
+          return res.status(404).send("Carrito no existente");
+      }
+
+      const purchaseItems = cart.products;
+      const successfullyPurchased = [];
+      const failedToPurchase = [];
+
+      for (const purchaseItem of purchaseItems) {
+          const product = await productModel.findById(purchaseItem.id_prod._id);
+
+          if (!product) {
+              return res.status(404).send(`Producto con ID ${purchaseItem.id_prod._id} no encontrado.`);
+          }
+
+          if (product.stock >= purchaseItem.quantity) {
+
+              product.stock -= purchaseItem.quantity;
+              await product.save();
+              successfullyPurchased.push({ id_prod: purchaseItem.id_prod, quantity: purchaseItem.quantity });
+          } else {
+              failedToPurchase.push({ id_prod: purchaseItem.id_prod, quantity: purchaseItem.quantity });
+          }
+      }
+
+
+      const ticketCode = generateUniqueTicketCode();
+
+
+      const totalAmount = calculateTotalAmount(successfullyPurchased);
+
+
+      const purchaser = cart.purchaser;
+
+
+      const ticketData = {
+          code: ticketCode,
+          amount: totalAmount,
+          purchaser: purchaser,
+      };
+
+      const newTicket = new ticketModel(ticketData);
+      await newTicket.save();
+
+
+      const nonPurchasedProducts = failedToPurchase.map((item) => item.id_prod);
+      cart.products = cart.products.filter((purchaseItem) =>
+          !nonPurchasedProducts.find((nonPurchased) => nonPurchased.equals(purchaseItem.id_prod))
+      );
+      await cart.save();
+
+      return res.status(200).json({ successfullyPurchased, failedToPurchase });
+  } catch (error) {
+      console.error(error);
+      return res.status(500).send("Error al finalizar la compra.");
+  }
+};
+
+
+function generateUniqueTicketCode() {
+
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let code = '';
+  for (let i = 0; i < 8; i++) {
+      code += characters.charAt(Math.floor(Math.random() * characters.length));
+  }
+  return code;
+}
+
+function calculateTotalAmount(purchaseItems) {
+  return purchaseItems.reduce((total, item) => {
+      const product = item.id_prod;
+      const quantity = item.quantity;
+      const productPrice = product.price;
+      return total + productPrice * quantity;
+  }, 0);
 }
