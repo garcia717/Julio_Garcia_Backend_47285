@@ -27,6 +27,17 @@ mongoose.connect(process.env.MONGO_URL)
   .then(() => {console.log('BDD conectada')})
   .catch(() => console.log('Error en conexion a BDD'))
 
+
+const whiteList = ['http://127.0.0.1:5173', 'http://127.0.0.1:8080', 'http://localhost:8080/login']  
+const corsOptions ={
+  origin: function(origin,callback){
+    if(whiteList.indexOf(origin) != -1 || !origin){
+      callback(null, true)
+    }else{
+      callback(new Error("Acceso denegado"))
+    }
+  }
+}
 const PORT = 8080;
 const app = express();
 const server = http.createServer(app);
@@ -50,10 +61,7 @@ app.engine('handlebars', hbs.engine);
 app.set('view engine', 'handlebars');
 app.set('views', path.join(__dirname, 'views'));
 
-app.use(cors({
-  origin: '*',
-  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-}))
+app.use(cors())
 app.use(express.json());
 app.use(express.urlencoded({extended: true}))
 app.use('/socket.io', express.static(path.join(__dirname, 'node_modules/socket.io/client-dist')));

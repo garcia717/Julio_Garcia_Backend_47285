@@ -10,9 +10,9 @@ const LocalStrategy = local.Strategy
 const ExtractJWT = jwt.ExtractJwt
 
 const initializePassport = () => {
+    
     const cookieExtractor = req => {
-        console.log(req.headers.authorization)
-        const token = req.headers.authorization ? req.headers.authorization : {}
+        const token = req.cookies? req.cookies.jwtCookie: {};
         return token;
         
     }
@@ -25,7 +25,7 @@ const initializePassport = () => {
         } catch (error) {
             return done(error);
         }
-    })); 
+    }));
     passport.use('register', new LocalStrategy({
         passReqToCallback: true,
         usernameField: 'email'
